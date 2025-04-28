@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Happy Birthday Mamma!</title>
+    <style>
+    body {
+            margin: 0;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #f9d5e5, #f7a1c4); /* pastel pink gradient */
+            overflow: hidden;
+            text-align: center;
+            color: #7b1e3a; /* deep pink text */
+            user-select: none;
+        }
+    .page {
+        display: none;
+        height: 100vh;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        padding: 10px 15px;
+        opacity: 0;
+        transition: opacity 0.8s ease-in-out;
+        background: none;
+        border-radius: 15px;
+        box-shadow: none;
+        max-width: 100vw;
+        max-height: 100vh;
+        margin: 0 auto;
+        position: relative;
+        overflow-y: auto;
+        box-sizing: border-box;
+    }
+        .active {
+            display: flex;
+            opacity: 1;
+        }
+        button {
+            padding: 15px 35px;
+            font-size: 22px;
+            background: linear-gradient(45deg, #f7a1c4, #d46a7e); /* pastel pink with deep pink */
+            color: #4a0a22;
+            border: none;
+            border-radius: 25px;
+            box-shadow: 0 3px 8px rgba(212, 106, 126, 0.6);
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s ease, transform 0.2s ease;
+            user-select: none;
+            margin-top: 15px;
+        }
+        button:hover {
+            background: linear-gradient(45deg, #d46a7e, #f7a1c4);
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(212, 106, 126, 0.8);
+        }
+        #countdown {
+            font-size: 140px;
+            font-weight: 900;
+            color: #d46a7e; /* deep pink */
+            background: none !important;
+            -webkit-background-clip: unset !important;
+            -webkit-text-fill-color: unset !important;
+            animation: bounce 0.5s infinite;
+            text-shadow: 0 0 30px #d46a7e;
+            user-select: none;
+            margin: 0;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-25px); }
+        }
+        #heartsOverlay {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            background: transparent;
+            z-index: 10000;
+            overflow: visible;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 20px;
+        }
+        .heart {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #ff0000; /* red hearts */
+            transform: rotate(-45deg);
+            animation: floatUp 3s ease forwards;
+        }
+        .heart::before,
+        .heart::after {
+            content: "";
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #ff0000;
+            border-radius: 50%;
+        }
+        .heart::before {
+            top: -15px;
+            left: 0;
+        }
+        .heart::after {
+            top: 0;
+            left: 15px;
+        }
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) rotate(-45deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-300px) rotate(-45deg);
+            }
+        }
+    #poem {
+        padding: 15px 20px;
+        font-size: 22px;
+        font-family: 'Dancing Script', cursive;
+        background: linear-gradient(135deg, #f7a1c4, #f9d5e5); /* pastel pink gradient */
+        border-radius: 20px;
+        margin: 10px auto 10px auto;
+        max-width: 90vw;
+        max-height: 70vh;
+        overflow-y: auto;
+        color: #7b1e3a;
+        text-shadow: 1px 1px 2px #d46a7e;
+    }
+    .nav-buttons {
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+    #volumeControl {
+        position: fixed;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        z-index: 10001;
+    }
+    /* Flip calendar styles */
+    #flipCalendar {
+        position: fixed;
+        top: 30%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 150px;
+        height: 200px;
+        perspective: 1000px;
+        z-index: 10002;
+        display: none;
+        user-select: none;
+    }
+    .flip-card {
+        width: 100%;
+        height: 100%;
+        background: #f7a1c4;
+        border-radius: 15px;
+        box-shadow: 0 8px 15px rgba(212, 106, 126, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 100px;
+        font-weight: 900;
+        color: #4a0a22;
+        backface-visibility: hidden;
+        position: absolute;
+        top: 0;
+        left: 0;
+        transition: transform 0.6s ease-in-out;
+    }
+    .flip-card.back {
+        transform: rotateX(180deg);
+    }
+    .flip-container {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transform-style: preserve-3d;
+    }
+    /* Confetti canvas */
+    #confetti-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 10003;
+    }
+    .bodypage3 {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #f9d5e5, #f48fb1);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+    }
+    .card {
+      position: relative;
+      width: 350px;
+      height: 250px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+      padding: 30px;
+      text-align: center;
+      color: #c2185b;
+      overflow: hidden;
+    }
+    .balloons {
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle at 30% 30%, #e91e63, #ad1457);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      animation: float 3s ease-in-out infinite;
+      z-index: 10;
+    }
+    .balloons::before, .balloons::after {
+      content: '';
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      top: 20px;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      animation: float 4s ease-in-out infinite;
+    }
+    .balloons::before {
+      left: -50px;
+      background: radial-gradient(circle at 30% 30%, #f48fb1, #c2185b);
+    }
+    .balloons::after {
+      left: 50px;
+      top: 40px;
+      width: 60px;
+      height: 60px;
+      background: radial-gradient(circle at 30% 30%, #f48fb1, #f06292);
+      animation: float 5s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-15px);
+      }
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      color: #ad1457;
+    }
+    .calendar {
+      font-size: 4rem;
+      font-weight: bold;
+      color: #c2185b;
+      font-family: 'Courier New', Courier, monospace;
+      user-select: none;
+      margin-top: 10px;
+    }
+    .signature {
+      font-style: italic;
+      color: #ad1457;
+      margin-top: 30px;
+    }
+    #page9 h1 {
+    font-size: 3rem;
+    margin-bottom: 30px;
+    color: #333;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+}
+
+#page9 .image {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+#page9 .memories_container {
+    width: 700px;
+    height: 400px;
+    overflow: hidden;
+    border-radius: 15px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+#page9 .memories_container:nth-child(odd) {
+    align-self: flex-start;
+}
+
+#page9 .memories_container:nth-child(even) {
+    align-self: flex-end;
+}
+
+#page9 .memories_image {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    object-fit: cover;
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#page9 .memories_image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+}    
+#momVideo{
+    height: 300px;
+    width: 800px;
+}
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic">
+        <source src="./SoulProdMusic_-_Happy_Birthday_(Lofi_Version).mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+      </audio>
+      <div>
+        <h1>🎂 Happy Birthday!</h1>
+        <button onclick="startMusic()" style="padding:10px 20px;font-size:20px;">Play Music</button>
+      </div>
+
+<div id="page1" class="page active">
+    <h1>আজকের দিনটি খুব বিশেষ একটি দিন! 😊</h1>
+    <h2>চাও জানতে কেন?🤔</h2>
+    <br />
+    <br />
+    <br />
+    <br />
+    <div class="nav-buttons">
+        <button onclick="nextPage()">Next</button>
+    </div>
+</div>
+
+<div id="page2" class="page">
+    <h1 id="countdown">3</h1>
+    <div class="nav-buttons">
+        <button onclick="backPage()">Back</button>
+        <button onclick="nextPage()">Next</button>
+    </div>
+</div>
+
+<div id="page3" class="page">
+    <h1>Because you are the best mom! 🌸</h1>
+    <div class="nav-buttons">
+        <button onclick="backPage()">Back</button>
+        <button onclick="nextPage()">Next</button>
+    </div>
+    
+</div>
+
+<div id="page4" class="page">
+
+    <h1>Because you are my sunshine... ☀</h1>
+    <div class="nav-buttons">
+        <button onclick="backPage()">Back</button>
+        <button onclick="nextPage()">Next</button>
+    </div>
+</div>
+<div id="page5" class="page">
+    <h1>🎁 Surprise Unwrapping...</h1>
+    <div class="nav-buttons">
+        <button onclick="backPage()">Back</button>
+        <button onclick="nextPage()">Next</button>
+    </div>
+</div>
+
+<div id="page6" class="page">
+    <div class="bodypage3" style="background-color: none;">
+        <div class="card" style="background-color: none;" >
+            <div class="balloons"></div>
+            <h1>It's your birthday!</h1>
+            <p>Celebrate this special day with joy and love.</p>
+            <div class="calendar" id="calendarNumber">00</div>
+            <p class="signature">With all my love, Your Child</p>
+          </div>
+          <div class="nav-buttons">
+            <button onclick="backPage()">Back</button>
+            <button onclick="nextPage()">Next</button>
+        </div>
+        </div>
+</div>
+
+<div id="page7" class="page">
+    <video id="momVideo" src="./Video.mp4" controls></video>
+    <div class="nav-buttons">
+        <button onclick="backPage()">Back</button>
+        <button onclick="nextPage()">Next</button>
+    </div>
+</div>
+
+<div id="page8" class="page">
+    <h1>ভালোবাসি তোমায় ❤<br /> I Love You Mamma!</h1>
+    <div class="nav-buttons">
+        <button onclick="backPage()">Back</button>
+        <button onclick="nextPage()">Next</button>
+    </div>
+    <div id="poem">
+        <p id="poemText"></p>
+    </div>
+    
+</div>
+<div id="page9" class="page">
+    <h1 style="margin-top: 100px;">Memories</h1>
+    <div class="image" style="margin-top: 100px;">
+        <div class="memories_container">
+            <img src="./assests/img1.jpg" class="memories_image"> 
+        </div>
+        <div class="memories_container">
+            <img src="./assests/img2.jpg" class="memories_image"> 
+        </div>
+        <div class="memories_container">
+            <img src="./assests/img3.jpg" class="memories_image"> 
+        </div>
+        <div class="memories_container">
+            <img src="./assests/img4.jpg" class="memories_image"> 
+        </div>
+        <div class="memories_container">
+            <img src="./assests/img5.jpg" class="memories_image"> 
+        </div>
+        <div class="memories_container">
+            <img src="./assests/img6.jpg" class="memories_image"> 
+        </div>
+        <div class="memories_container">
+            <img src="./assests/img7.jpg" class="memories_image"> 
+        </div>
+        <div class="memories_container">
+            <img src="./assests/img8.jpg" class="memories_image"> 
+        </div>
+        <div class="memories_container">
+            <img src="./assests/img9.jpg" class="memories_image"> 
+        </div>
+
+    </div>
+</div>
+
+<script src="scripts/confetti.js"></script>
+
+<script>
+    let page = 1;
+    // let music = document.getElementById("bgMusic");
+    // music.volume = 0.3;
+    function startMusic() {
+    const audio = document.getElementById('bgMusic');
+    audio.play();
+}
+    function nextPage() {
+        document.getElementById(`page${page}`).classList.remove("active");
+        page++;
+        if (page <= 11) {
+            document.getElementById(`page${page}`).classList.add("active");
+            if (page === 2) startCountdown();
+            if (page === 3) showFlipCalendar();
+            if (page === 7) confetti.start();
+            if (page === 10) startSlideshow();
+        }
+    }
+
+    function backPage() {
+        if (page > 1) {
+            document.getElementById(`page${page}`).classList.remove("active");
+            page--;
+            document.getElementById(`page${page}`).classList.add("active");
+            if (page === 2) startCountdown();
+            if (page === 3) showFlipCalendar();
+            if (page === 7) confetti.start();
+            if (page === 10) startSlideshow();
+        }
+    }
+
+    function startCountdown() {
+        let count = 3;
+        const countdownEl = document.getElementById("countdown");
+        countdownEl.innerText = count;
+        let counter = setInterval(() => {
+            count--;
+            if (count === 0) {
+                clearInterval(counter);
+                nextPage();
+            } else {
+                countdownEl.innerText = count;
+            }
+        }, 700);
+    }
+
+    const heartsOverlay = document.createElement("div");
+    heartsOverlay.id = "heartsOverlay";
+    document.body.appendChild(heartsOverlay);
+
+    function createHeart() {
+        const heart = document.createElement("div");
+        heart.classList.add("heart");
+        heart.style.left = Math.random() * window.innerWidth + "px";
+        heart.style.top = window.innerHeight - 40 + "px";
+        heart.style.backgroundColor = "#ff0000";
+        heart.style.animationDuration = 2 + Math.random() * 2 + "s";
+        heartsOverlay.appendChild(heart);
+        setTimeout(() => {
+            heart.remove();
+        }, 3000);
+    }
+
+    function showFlipCalendar(callback) {
+        const flipCalendar = document.getElementById("flipCalendar");
+        const flipContainer = document.getElementById("flipContainer");
+        const front = flipContainer.querySelector(".front");
+        const back = flipContainer.querySelector(".back");
+        let currentNumber = 0;
+        let targetNumber = 54;
+        let flips = 10;
+        let flipCount = 0;
+
+        flipCalendar.style.display = "block";
+
+        function flip() {
+            flipCount++;
+            currentNumber = Math.floor(Math.random() * 100);
+            front.innerText = currentNumber;
+            back.innerText = currentNumber;
+            flipContainer.classList.add("flipping");
+            setTimeout(() => {
+                flipContainer.classList.remove("flipping");
+                if (flipCount < flips) {
+                    setTimeout(flip, 150);
+                } else {
+                    front.innerText = targetNumber;
+                    back.innerText = targetNumber;
+                    flipContainer.classList.add("flipping");
+                    setTimeout(() => {
+                        flipContainer.classList.remove("flipping");
+                        setTimeout(() => {
+                            flipCalendar.style.display = "none";
+                            if (callback) callback();
+                        }, 1000);
+                    }, 600);
+                }
+            }, 600);
+        }
+        flip();
+    }
+
+    function lowerVolume() {
+        music.volume = 0.05;
+    }
+
+    let photos = ["photo1.jpg", "photo2.jpg", "photo3.jpg", "photo4.jpg", "photo5.jpg"];
+    let currentPhoto = 0;
+
+    function startSlideshow() {
+        setInterval(() => {
+            currentPhoto = (currentPhoto + 1) % photos.length;
+            document.getElementById("slideshow").src = `images/${photos[currentPhoto]}`;
+        }, 3000);
+    }
+
+    // Typewriter effect for poem page
+    function typeWriter(text, i, callback) {
+        if (i < text.length) {
+            document.getElementById("poemText").innerHTML = text.substring(0, i + 1);
+            setTimeout(() => {
+                typeWriter(text, i + 1, callback);
+            }, 80);
+        } else if (callback) {
+            callback();
+        }
+    }
+    function shuffleNumber(target, duration, finalNumber) {
+      const startTime = performance.now();
+      const element = document.getElementById(target);
+      function shuffle() {
+        const elapsed = performance.now() - startTime;
+        if (elapsed < duration) {
+          const randomNum = Math.floor(Math.random() * 100);
+          element.textContent = randomNum.toString().padStart(2, '0');
+          requestAnimationFrame(shuffle);
+        } else {
+          element.textContent = finalNumber.toString().padStart(2, '0');
+        }
+      }
+      shuffle();
+    }
+    shuffleNumber('calendarNumber', 3000, 54);
+
+    function startTypewriter() {
+        const fullText = `The hand that held when I would stray, <br>
+স্নেহের পরশে তুমি দেখিয়েছো আলোর রে।  <br>
+The tears you dried along the way,   <br>
+চোখের জলে মিশেছিল তোমার নীরব ব্যথা।  <br>
+My loudest cheer, my guiding star,  <br>
+স্বপ্নে আমার তুমি জুগিয়েছো বল অনিবার।  <br>
+Happy Birthday, Mama, near and far! ❤  <br>
+Across the miles, your spirit flies,  <br>
+দূরের বাঁধনও মানে না কোনো শেষ।  <br>
+Your strength, a truth that never dies,  <br>
+তোমার সাহসই তো আমার অমূল্য কেশ।  <br>
+Though words may clash, and time goes on,  <br>
+তবুও হৃদয়ে তোমার আসন চিরন্তন।  <br>
+
+No holidays you've ever known,  <br>
+নিজের সকল সুখ করেছো আমার তরে।  <br>
+Each saved-up coin, for me alone has grown,  <br>
+জমানো প্রতিটি কড়ি, আমার জীবন ভরে।  <br>
+You filled my plate with loving care,  <br>
+আহারে যত্নে তুমি ছিলে আমার আলো।  <br>
+
+Two months a year, a joy to see,  <br>
+বছরান্তে সে মিলন, আনে নতুন গান।  <br>
+You shower love so constantly and free,  <br>
+তোমার ভালোবাসাই তো আমার পথের প্রাণ।  <br>
+Though college calls, I'm still your own,  <br>
+তবুও মাগো, তুমিই আমার ভুবন মোহন` ;
+        document.getElementById("poemText").innerHTML = "";
+        typeWriter(fullText, 0);
+    }
+
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.target.id === "page8" && mutation.target.classList.contains("active")) {
+                startTypewriter();
+            }
+        });
+    });
+    observer.observe(document.getElementById("page8"), { attributes: true, attributeFilter: ["class"] });
+</script>
+</body>
+</html>
